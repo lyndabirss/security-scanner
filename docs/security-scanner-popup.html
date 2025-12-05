@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Scanner - POC UI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            width: 420px;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        .header .url {
+            font-size: 12px;
+            opacity: 0.9;
+            word-break: break-all;
+        }
+
+        .overall-risk {
+            background: white;
+            margin: 12px;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .risk-indicator {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+
+        .risk-indicator.high {
+            background: #fee;
+        }
+
+        .risk-indicator.medium {
+            background: #fffbeb;
+        }
+
+        .risk-indicator.low {
+            background: #f0fdf4;
+        }
+
+        .risk-content h2 {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .risk-level {
+            font-weight: bold;
+        }
+
+        .risk-level.high {
+            color: #dc2626;
+        }
+
+        .risk-level.medium {
+            color: #ea580c;
+        }
+
+        .risk-level.low {
+            color: #16a34a;
+        }
+
+        .scan-time {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .quick-stats {
+            background: white;
+            margin: 0 12px 12px;
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-around;
+            font-size: 13px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .stat-number.critical {
+            color: #dc2626;
+        }
+
+        .stat-number.medium {
+            color: #ea580c;
+        }
+
+        .stat-number.passed {
+            color: #16a34a;
+        }
+
+        .sections {
+            margin: 0 12px 12px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .section-header:hover {
+            background: #f9fafb;
+        }
+
+        .section-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            flex: 1;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .section-count {
+            font-size: 12px;
+            color: #666;
+            padding: 2px 8px;
+            background: #f3f4f6;
+            border-radius: 12px;
+        }
+
+        .chevron {
+            font-size: 12px;
+            color: #999;
+            transition: transform 0.2s;
+        }
+
+        .section.expanded .chevron {
+            transform: rotate(90deg);
+        }
+
+        .section-content {
+            display: none;
+            padding: 0 14px 14px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .section.expanded .section-content {
+            display: block;
+        }
+
+        .finding {
+            padding: 10px;
+            margin-top: 8px;
+            border-left: 3px solid;
+            background: #f9fafb;
+            border-radius: 4px;
+        }
+
+        .finding.critical {
+            border-color: #dc2626;
+            background: #fef2f2;
+        }
+
+        .finding.medium {
+            border-color: #ea580c;
+            background: #fff7ed;
+        }
+
+        .finding.passed {
+            border-color: #16a34a;
+            background: #f0fdf4;
+        }
+
+        .finding-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .finding-icon {
+            font-size: 14px;
+        }
+
+        .finding-title {
+            font-size: 13px;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .finding-risk {
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .finding-risk.critical {
+            background: #dc2626;
+            color: white;
+        }
+
+        .finding-risk.medium {
+            background: #ea580c;
+            color: white;
+        }
+
+        .finding-risk.passed {
+            background: #16a34a;
+            color: white;
+        }
+
+        .finding-description {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+            margin-bottom: 6px;
+        }
+
+        .finding-impact {
+            font-size: 11px;
+            color: #444;
+            background: white;
+            padding: 6px;
+            border-radius: 4px;
+            margin-top: 6px;
+        }
+
+        .finding-impact strong {
+            color: #000;
+        }
+
+        .actions {
+            padding: 12px;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1e40af;
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🛡️ Security Scanner</h1>
+        <div class="url">checkout.example.com/payment</div>
+    </div>
+
+    <div class="overall-risk">
+        <div class="risk-indicator high">🔴</div>
+        <div class="risk-content">
+            <h2>Overall Risk: <span class="risk-level high">HIGH</span></h2>
+            <div class="scan-time">Scanned 2 minutes ago</div>
+        </div>
+    </div>
+
+    <div class="quick-stats">
+        <div class="stat">
+            <div class="stat-number critical">3</div>
+            <div>Critical</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number medium">7</div>
+            <div>Medium</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number passed">12</div>
+            <div>Passed</div>
+        </div>
+    </div>
+
+    <div class="sections">
+        <!-- Security Headers Section -->
+        <div class="section expanded">
+            <div class="section-header" onclick="this.parentElement.classList.toggle('expanded')">
+                <span class="section-icon">🔴</span>
+                <span class="section-title">Security Headers</span>
+                <span class="section-count">3 issues</span>
+                <span class="chevron">›</span>
+            </div>
+            <div class="section-content">
+                <div class="finding critical">
+                    <div class="finding-header">
+                        <span class="finding-icon">🔴</span>
+                        <span class="finding-title">Missing Content-Security-Policy</span>
+                        <span class="finding-risk critical">HIGH</span>
+                    </div>
+                    <div class="finding-description">
+                        No CSP header detected. This payment page is vulnerable to XSS attacks that could steal payment credentials.
+                    </div>
+                    <div class="finding-impact">
+                        <strong>Impact:</strong> Attackers can inject malicious scripts to steal card data, session tokens, or redirect users to phishing sites.
+                    </div>
+                </div>
+
+                <div class="finding medium">
+                    <div class="finding-header">
+                        <span class="finding-icon">🟠</span>
+                        <span class="finding-title">Weak X-Frame-Options</span>
+                        <span class="finding-risk medium">MEDIUM</span>
+                    </div>
+                    <div class="finding-description">
+                        X-Frame-Options set to SAMEORIGIN but payment forms should use DENY to prevent all framing.
+                    </div>
+                    <div class="finding-impact">
+                        <strong>Impact:</strong> Potential clickjacking attacks within same origin.
+                    </div>
+                </div>
+
+                <div class="finding passed">
+                    <div class="finding-header">
+                        <span class="finding-icon">🟢</span>
+                        <span class="finding-title">HSTS Properly Configured</span>
+                        <span class="finding-risk passed">PASS</span>
+                    </div>
+                    <div class="finding-description">
+                        Strict-Transport-Security header present with 1 year max-age and includeSubDomains.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Validation Section -->
+        <div class="section">
+            <div class="section-header" onclick="this.parentElement.classList.toggle('expanded')">
+                <span class="section-icon">🟠</span>
+                <span class="section-title">Input Validation</span>
+                <span class="section-count">5 issues</span>
+                <span class="chevron">›</span>
+            </div>
+            <div class="section-content">
+                <div class="finding critical">
+                    <div class="finding-header">
+                        <span class="finding-icon">🔴</span>
+                        <span class="finding-title">Email Field Accepts Script Tags</span>
+                        <span class="finding-risk critical">HIGH</span>
+                    </div>
+                    <div class="finding-description">
+                        Email input field (#email-input) accepts and renders HTML/JavaScript without sanitization.
+                    </div>
+                    <div class="finding-impact">
+                        <strong>Impact:</strong> Direct XSS vulnerability. Tested with benign alert() payload - executes successfully.
+                    </div>
+                </div>
+
+                <div class="finding medium">
+                    <div class="finding-header">
+                        <span class="finding-icon">🟠</span>
+                        <span class="finding-title">Password Length Not Enforced</span>
+                        <span class="finding-risk medium">MEDIUM</span>
+                    </div>
+                    <div class="finding-description">
+                        Password field accepts single character inputs. No minimum length validation client-side.
+                    </div>
+                </div>
+
+                <div class="finding passed">
+                    <div class="finding-header">
+                        <span class="finding-icon">🟢</span>
+                        <span class="finding-title">CSRF Token Present</span>
+                        <span class="finding-risk passed">PASS</span>
+                    </div>
+                    <div class="finding-description">
+                        Valid CSRF token found in form. Form submissions protected against cross-site request forgery.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Information Exposure Section -->
+        <div class="section">
+            <div class="section-header" onclick="this.parentElement.classList.toggle('expanded')">
+                <span class="section-icon">🟢</span>
+                <span class="section-title">Information Exposure</span>
+                <span class="section-count">0 issues</span>
+                <span class="chevron">›</span>
+            </div>
+            <div class="section-content">
+                <div class="finding passed">
+                    <div class="finding-header">
+                        <span class="finding-icon">🟢</span>
+                        <span class="finding-title">No Sensitive Data in HTML</span>
+                        <span class="finding-risk passed">PASS</span>
+                    </div>
+                    <div class="finding-description">
+                        No API keys, tokens, or PII found in HTML source, comments, or JavaScript.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Configuration Section -->
+        <div class="section">
+            <div class="section-header" onclick="this.parentElement.classList.toggle('expanded')">
+                <span class="section-icon">🟠</span>
+                <span class="section-title">Configuration</span>
+                <span class="section-count">2 issues</span>
+                <span class="chevron">›</span>
+            </div>
+            <div class="section-content">
+                <div class="finding critical">
+                    <div class="finding-header">
+                        <span class="finding-icon">🔴</span>
+                        <span class="finding-title">Debug Mode Enabled</span>
+                        <span class="finding-risk critical">HIGH</span>
+                    </div>
+                    <div class="finding-description">
+                        Application running in debug mode. Stack traces visible in error responses.
+                    </div>
+                    <div class="finding-impact">
+                        <strong>Impact:</strong> Exposes internal file paths, database structure, and sensitive configuration details to attackers.
+                    </div>
+                </div>
+
+                <div class="finding passed">
+                    <div class="finding-header">
+                        <span class="finding-icon">🟢</span>
+                        <span class="finding-title">Version Info Not Exposed</span>
+                        <span class="finding-risk passed">PASS</span>
+                    </div>
+                    <div class="finding-description">
+                        No framework or server version numbers detected in headers or meta tags.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="actions">
+        <button class="btn btn-primary">📄 Export Report</button>
+        <button class="btn btn-secondary">🔄 Re-scan</button>
+    </div>
+
+    <script>
+        // Simple interactivity demo
+        document.querySelectorAll('.section-header').forEach(header => {
+            header.addEventListener('click', function(e) {
+                if (e.target.classList.contains('section-header')) {
+                    this.closest('.section').classList.toggle('expanded');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Page - Test Example</title>
+    
+    <!-- GOOD: Strict Content-Security-Policy -->
+    <!-- Note: In real implementation, this would be an HTTP header -->
+    <!-- For testing purposes, we demonstrate what should be present -->
+    <meta http-equiv="Content-Security-Policy" 
+          content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-ancestors 'none';">
+    
+    <!-- GOOD: Strict X-Frame-Options -->
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    
+    <!-- GOOD: Referrer policy -->
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    
+    <!-- GOOD: Permissions policy -->
+    <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()">
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f0fdf4;
+        }
+        .success-banner {
+            background: #22c55e;
+            color: white;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .content-card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .security-checklist {
+            background: #f0fdf4;
+            border: 2px solid #22c55e;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .checklist-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+        .check-icon {
+            color: #22c55e;
+            margin-right: 10px;
+        }
+        code {
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .form-section {
+            margin-top: 30px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-top: 5px;
+        }
+        /* GOOD: No inline styles that could be exploited */
+        .submit-button {
+            margin-top: 15px;
+            padding: 12px 24px;
+            background: #22c55e;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .submit-button:hover {
+            background: #16a34a;
+        }
+    </style>
+</head>
+<body>
+    <div class="success-banner">
+        ✅ SECURE TEST PAGE - Demonstrates Proper Security Practices
+    </div>
+
+    <div class="content-card">
+        <h1>Security Best Practices Example</h1>
+        <p>This page demonstrates proper security implementation for web applications.</p>
+
+        <div class="security-checklist">
+            <h3>🛡️ Security Controls Implemented:</h3>
+            
+            <div class="checklist-item">
+                <span class="check-icon">✅</span>
+                <strong>Content-Security-Policy:</strong> Strict CSP prevents XSS attacks
+            </div>
+            
+            <div class="checklist-item">
+                <span class="check-icon">✅</span>
+                <strong>X-Frame-Options:</strong> Set to DENY, prevents clickjacking
+            </div>
+            
+            <div class="checklist-item">
+                <span class="check-icon">✅</span>
+                <strong>No Debug Mode:</strong> Production mode enabled, no verbose errors
+            </div>
+            
+            <div class="checklist-item">
+                <span class="check-icon">✅</span>
+                <strong>No Exposed Secrets:</strong> No API keys or tokens in client-side code
+            </div>
+            
+            <div class="checklist-item">
+                <span class="check-icon">✅</span>
+                <strong>Input Validation:</strong> Proper type and length constraints
+            </div>
+            
+            <div class="checklist-item">
+                <span class="check-icon">✅</span>
+                <strong>CSRF Protection:</strong> Token-based protection implemented
+            </div>
+            
+            <div class="checklist-item">
+                <span class="check-icon">✅</span>
+                <strong>HTTPS Only:</strong> Secure transport enforced
+            </div>
+            
+            <div class="checklist-item">
+                <span class="check-icon">✅</span>
+                <strong>Sanitized Outputs:</strong> All user input properly escaped
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>Sample Contact Form</h2>
+            <p>Demonstrates proper input handling and validation.</p>
+            
+            <form id="secureForm" action="/api/contact" method="POST">
+                <!-- GOOD: Proper input types with constraints -->
+                <label for="name">Name (required, 2-50 chars):</label>
+                <input type="text" 
+                       id="name" 
+                       name="name" 
+                       minlength="2" 
+                       maxlength="50" 
+                       pattern="[A-Za-z\s]+" 
+                       required>
+
+                <!-- GOOD: Email validation -->
+                <label for="email">Email (required):</label>
+                <input type="email" 
+                       id="email" 
+                       name="email" 
+                       required>
+
+                <!-- GOOD: Phone with pattern -->
+                <label for="phone">Phone (optional):</label>
+                <input type="tel" 
+                       id="phone" 
+                       name="phone" 
+                       pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" 
+                       placeholder="123-456-7890">
+
+                <!-- GOOD: Textarea with maxlength -->
+                <label for="message">Message (max 500 chars):</label>
+                <textarea id="message" 
+                          name="message" 
+                          maxlength="500" 
+                          rows="5"></textarea>
+
+                <!-- GOOD: CSRF token -->
+                <input type="hidden" 
+                       name="csrf_token" 
+                       value="secure_random_token_xyz123">
+
+                <button type="submit" class="submit-button">Send Message</button>
+            </form>
+        </div>
+
+        <div class="security-checklist" style="margin-top: 30px;">
+            <h3>📊 Expected Scanner Results:</h3>
+            <p><strong>Overall Risk: 🟢 LOW</strong></p>
+            <ul>
+                <li>✅ All security headers present and properly configured</li>
+                <li>✅ No information leakage detected</li>
+                <li>✅ Proper input validation on all fields</li>
+                <li>✅ CSRF protection implemented</li>
+                <li>✅ No debug mode or exposed secrets</li>
+                <li>✅ All checks passed</li>
+            </ul>
+            <p><strong>Finding Count:</strong> 0 Critical, 0 High, 0 Medium, 8+ Passed</p>
+        </div>
+    </div>
+
+    <script>
+        // GOOD: Production mode - no debug logging
+        'use strict';
+
+        // GOOD: Proper error handling without exposing internals
+        document.getElementById('secureForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // GOOD: Validation before submission
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            
+            // GOOD: Basic validation (real app would do more server-side)
+            if (name.length < 2 || name.length > 50) {
+                alert('Please enter a valid name (2-50 characters)');
+                return false;
+            }
+            
+            // GOOD: Email regex validation
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email)) {
+                alert('Please enter a valid email address');
+                return false;
+            }
+            
+            // GOOD: Generic success message (no sensitive data exposed)
+            alert('Form validated successfully!');
+            
+            // In real implementation, would submit via secure AJAX with proper headers
+            console.log('Form ready for secure submission');
+        });
+
+        // GOOD: Minimal, non-verbose error handler
+        window.onerror = function() {
+            // Log generic error, don't expose details
+            console.error('An error occurred');
+            return true; // Prevent default browser error handling
+        };
+
+        // GOOD: No exposed configuration or secrets
+        // GOOD: No debug flags
+        // GOOD: No verbose logging
+    </script>
+</body>
+</html>
