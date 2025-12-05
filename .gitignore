@@ -1,21 +1,16 @@
-   # Personal planning documents - do not commit
-   ACTION_PLAN.md
+# Personal planning documents - do not commit
+ACTION_PLAN.md
 
-   # OS files
-   .DS_Store
-   Thumbs.db
+# OS files
+.DS_Store
+Thumbs.db
 
-   # IDE files
-   .vscode/
-   .idea/
-   *.swp
-   *.swo
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
 
-   # API keys (future safety)
-   .env
-   config.local.js
-   EOF
-
-ls
-cd..
-exit
+# API keys (future safety)
+.env
+config.local.js
