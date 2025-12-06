@@ -23,17 +23,25 @@ AI-Powered Browser Extension for Web Application Security Testing
 
 ---
 
-## ⚡ Quick Look
+## ⚡ Extension in Action
 
-### Extension Popup
-![Extension popup showing traffic light risk indicators]
-*[Screenshot of extension popup - to be added]*
+### Working Chrome Extension
+![Security Scanner Extension](docs/screenshots/Extension_Loaded.png)
+*Extension loaded successfully with interactive popup interface*
 
-### Risk Analysis
-![Detailed findings with AI-generated explanations]
-*[Screenshot of findings - to be added]*
+**Current Features:**
+- ✅ Loads successfully in Chrome without errors
+- ✅ Professional blue-themed UI with branding
+- ✅ Interactive scan button with test functionality
+- ✅ Service worker and content script architecture
+- ✅ Extensible structure ready for feature development
 
-### Traffic Light System
+---
+
+## 🎨 Traffic Light Risk System
+
+Visual risk indicators for instant priority assessment:
+
 - 🔴 **RED (HIGH):** Critical issues requiring immediate attention
 - 🟠 **AMBER (MEDIUM):** Significant issues to address soon
 - 🟢 **GREEN (LOW):** Minor issues or all checks passed
@@ -43,17 +51,13 @@ AI-Powered Browser Extension for Web Application Security Testing
 ## 🧪 Try It Yourself
 
 ### Test Pages
-I've created controlled test environments to demonstrate detection capabilities:
+Controlled test environments to demonstrate detection capabilities:
 
-- **[Vulnerable Payment Page](test-vulnerable-payment.html)** - Expected: 🔴 HIGH risk
+- **[Vulnerable Payment Page](docs/test-pages/test-vulnerable-payment.html)** - Expected: 🔴 HIGH risk
   - Missing CSP, debug mode, input validation issues
   
-- **[Secure Example Page](test-secure-example.html)** - Expected: 🟢 LOW risk
+- **[Secure Example Page](docs/test-pages/test-secure-example.html)** - Expected: 🟢 LOW risk
   - All security controls properly implemented
-
-### View Example Reports
-- [HIGH Risk Scan Report](#) *(to be added after implementation)*
-- [LOW Risk Scan Report](#) *(to be added after implementation)*
 
 ---
 
@@ -86,9 +90,15 @@ Static Detection (Tier 1)     Context Analysis (Tier 2)     AI Analysis (Tier 3)
 - v2 planned: OWASP Top 10, CVE feeds, Mozilla Observatory
 - No core rewrite needed for enhancements
 
+**Model Selection:**
+- **Claude Sonnet 4** chosen for optimal balance
+- Nuanced reasoning for context-dependent severity assessment
+- Fast response time (~2s) suitable for interactive tool
+- Cost-effective with caching optimization
+
 ---
 
-## 🧠 AI Integration
+## 🧠 AI Integration (Planned)
 
 ### Claude API Usage
 
@@ -119,26 +129,23 @@ this represents a CRITICAL risk requiring immediate remediation."
 
 ### Test Suite (Controlled Environment)
 
-| Test Page | Expected Risk | Detected Risk | Status |
-|-----------|--------------|---------------|--------|
-| Payment Page | 🔴 HIGH | 🔴 HIGH | ✅ Pass |
-| Login Page | 🟠 MEDIUM | 🟠 MEDIUM | ✅ Pass |
-| Blog Page | 🟠 MEDIUM | 🟠 MEDIUM | ✅ Pass |
-| Secure Page | 🟢 LOW | 🟢 LOW | ✅ Pass |
+| Test Page | Expected Risk | Status |
+|-----------|--------------|--------|
+| Payment Page | 🔴 HIGH | Ready for validation |
+| Login Page | 🟠 MEDIUM | Ready for validation |
+| Blog Page | 🟠 MEDIUM | Ready for validation |
+| Secure Page | 🟢 LOW | Ready for validation |
 
-**Accuracy:** 100% on controlled test suite
-
-### Production Validation *(to be completed)*
-
-Planned validation on 30+ live websites to measure:
-- Detection accuracy vs known security assessments
-- False positive rate
-- Performance benchmarks
-- Edge case handling
+**Next milestone:** Implement scanning logic to validate against test suite
 
 ---
 
 ## 🚀 Installation & Usage
+
+### Current Status
+✅ **Extension loads successfully in Chrome**  
+✅ **Basic popup UI functional**  
+🚧 **Scanning logic in development**
 
 ### Load Extension (Developer Mode)
 
@@ -148,28 +155,29 @@ Planned validation on 30+ live websites to measure:
 3. Enable "Developer mode" (top right toggle)
 4. Click "Load unpacked"
 5. Select the `src/` folder from this project
-6. Extension is now loaded!
+6. Extension icon (🛡️) appears in toolbar!
 
 **Firefox:**
 1. Navigate to `about:debugging#/runtime/this-firefox`
 2. Click "Load Temporary Add-on"
 3. Select any file in the `src/` folder
 
-### Run a Scan
+### Test the Extension
 
-1. Open any web page (or use the test pages provided)
-2. Click the extension icon in your browser toolbar
-3. View instant security analysis with traffic light indicators
-4. Expand sections to see detailed findings
-5. Export report for sharing (optional)
+1. Click the extension icon in your browser toolbar
+2. Popup opens showing "Extension Loaded Successfully!"
+3. Click "Scan This Page" button
+4. Test functionality demonstrates popup interaction
+
+**Actual scanning functionality:** Coming in next development phase
 
 ---
 
 ## 📚 Documentation
 
-- **[Design Document](DESIGN.md)** - Complete architecture, methodology, and technical approach
-- **[Testing Strategy](TESTING.md)** - Validation approach and test suite *(to be added)*
-- **[Changelog](CHANGELOG.md)** - Development timeline and version history *(to be added)*
+- **[Design Document](DESIGN.md)** - Complete architecture (v1.1), methodology, and technical approach including model selection rationale
+- **[Setup Instructions](SETUP_INSTRUCTIONS.md)** - Step-by-step guide for loading and testing the extension
+- **[Test Pages](docs/test-pages/)** - Vulnerable and secure examples for validation
 
 ---
 
@@ -197,18 +205,19 @@ Planned validation on 30+ live websites to measure:
 
 ## 🎓 Learning Journey
 
-This project was built while completing **Anthropic's "Building with Claude API" course**.
+This project is being built while completing **Anthropic's "Building with Claude API" course**.
 
 **Applied learnings:**
-- Prompt engineering for structured outputs
-- Cost optimization via caching
-- Context management strategies
-- Error handling and fallbacks
+- Extension architecture and manifest configuration
+- Prompt engineering for structured outputs (planned)
+- Cost optimization via caching (planned)
+- Context management strategies (planned)
+- Error handling and fallbacks (planned)
 
 **Visible evolution in commit history:**
-- Early commits: Basic static scanning
-- Mid-phase: Claude API integration
-- Recent: Prompt caching optimization (post-course)
+- Initial commits: Design documentation and test suite
+- Recent: Extension structure and UI implementation
+- Upcoming: Core scanning logic and AI integration
 
 Shows continuous improvement and application of new knowledge.
 
@@ -216,12 +225,15 @@ Shows continuous improvement and application of new knowledge.
 
 ## 🔮 Roadmap
 
-### v1.0 - MVP ✅ (Current)
-- Static vulnerability detection
-- Claude API contextual analysis
-- Traffic light risk indicators
-- HTML report export
-- Test suite validation
+### v1.0 - MVP (Current Phase)
+- ✅ Design documentation complete
+- ✅ Extension structure implemented
+- ✅ Basic popup UI working
+- ✅ Test pages created
+- 🚧 Static vulnerability detection (in progress)
+- 📋 Claude API contextual analysis (planned)
+- 📋 Traffic light risk indicators (planned)
+- 📋 HTML report export (planned)
 
 ### v2.0 - Enhanced (Q1 2026)
 - OWASP Top 10 integration
@@ -240,11 +252,40 @@ Shows continuous improvement and application of new knowledge.
 
 ## 📊 Technical Stack
 
-- **Frontend:** Vanilla JavaScript (no frameworks for lightweight extension)
-- **AI:** Claude API (Sonnet 4.5)
+- **Frontend:** Vanilla JavaScript (lightweight, no frameworks)
+- **Extension:** Chrome Extension Manifest V3
+- **AI:** Claude API (Sonnet 4) - planned integration
 - **Storage:** Browser local storage
 - **Architecture:** Event-driven, plugin-based
 - **Deployment:** Browser extension (Chrome, Firefox, Edge)
+
+---
+
+## 🚧 Development Progress
+
+### Completed
+✅ Comprehensive design document (v1.1)  
+✅ Professional README and documentation  
+✅ MIT License with IP ownership  
+✅ Test suite (vulnerable and secure pages)  
+✅ Extension manifest configuration  
+✅ Popup UI with branding and styling  
+✅ Service worker foundation  
+✅ Content script structure  
+✅ Extension icons (all sizes)  
+✅ Loads successfully in Chrome
+
+### In Progress
+🚧 DOM scanning and analysis logic  
+🚧 Static vulnerability detection rules  
+🚧 Risk assessment framework
+
+### Planned
+📋 Context-aware page classification  
+📋 Claude API integration  
+📋 Traffic light risk visualization  
+📋 HTML report generation  
+📋 Production validation
 
 ---
 
@@ -275,7 +316,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ## 🎯 Project Goals
 
-**Primary:** Demonstrate AI/ML integration in QA workflows
+**Primary:** Demonstrate AI/ML integration in QA workflows  
 **Secondary:** Create useful tool for security-conscious developers  
 **Learning:** Apply Anthropic Academy course concepts in real project
 
@@ -304,6 +345,8 @@ This tool is for responsible security assessment only.
 **Lynda M Birss**  
 📱 [GitHub Profile](https://github.com/lyndabirss)
 
+*For inquiries, please reach out via GitHub.*
+
 ---
 
 ## 🙏 Acknowledgments
@@ -320,11 +363,14 @@ This tool is for responsible security assessment only.
 
 ## 📈 Project Status
 
-**Current Phase:** MVP Implementation  
-**Test Suite:** ✅ Complete  
-**Design Document:** ✅ Complete  
-**Core Scanner:** 🚧 In Progress  
-**Claude Integration:** 📋 Planned  
-**Production Validation:** 📋 Planned
+**Current Phase:** MVP Implementation - Extension Structure Complete  
+**Timeline:** Started December 5, 2025  
 
-Last Updated: December 2025
+**Milestones:**
+- ✅ Day 1 (Dec 5): Design documentation and test suite
+- ✅ Day 2 (Dec 6): Extension structure, UI, and successful Chrome loading
+- ⏭️ Days 3-7: Core scanning logic implementation
+- ⏭️ Days 8-10: Claude API integration
+- ⏭️ Days 11-15: Validation and v1.0 release
+
+Last Updated: December 6, 2025
