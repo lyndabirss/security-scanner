@@ -222,6 +222,22 @@ classifyPage(page) {
 - High-sensitivity page with any findings
 - User requests deep analysis mode
 
+**Model Selection: Claude Sonnet 4**
+
+**Rationale:**
+- **Nuanced reasoning:** Understands context-dependent severity (e.g., missing CSP on payment page vs blog)
+- **Speed:** ~2 second response time suitable for interactive tool
+- **Cost-effective:** With prompt caching, ~$0.02 per scan vs $0.09 without optimization
+- **Structured outputs:** Reliable JSON parsing for consistent results
+- **Appropriate capability:** Balance between Haiku (too simple) and Opus (overkill for this task)
+
+**Model Comparison:**
+```
+Haiku:  Fast & cheap, but lacks nuanced security context awareness
+Sonnet: ⭐ Optimal - intelligent + fast + cost-effective
+Opus:   Most capable, but unnecessary expense for this use case
+```
+
 **Claude API Integration:**
 
 **System Prompt (Cached):**
@@ -662,6 +678,6 @@ The project showcases:
 
 ---
 
-**Document Version:** 1.0  
-**Last Updated:** December 2025  
+**Document Version:** 1.1  
+**Last Updated:** December 6, 2025  
 **Status:** Living document - updated as project evolves
