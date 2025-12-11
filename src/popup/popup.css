@@ -86,6 +86,11 @@ body {
     transform: scale(0.98);
 }
 
+.scan-button:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+}
+
 .results {
     margin-top: 15px;
     padding: 15px;
@@ -96,6 +101,110 @@ body {
 
 .results.hidden {
     display: none;
+}
+
+/* Action Bar Styles */
+.action-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 15px 20px;
+    background: white;
+    border-top: 1px solid #e5e7eb;
+}
+
+.action-btn {
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    position: relative;
+}
+
+.action-btn.primary {
+    grid-column: 1 / -1;  /* Span full width */
+    background: #2563eb;
+    color: white;
+    padding: 12px;
+    font-size: 14px;
+}
+
+.action-btn.primary:hover {
+    background: #1e40af;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+.action-btn.primary:active {
+    transform: translateY(0);
+}
+
+.action-btn.secondary {
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+}
+
+.action-btn.secondary:hover:not(.disabled) {
+    background: #e5e7eb;
+    border-color: #d1d5db;
+}
+
+.action-btn.secondary:active:not(.disabled) {
+    transform: scale(0.98);
+}
+
+.action-btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    color: #9ca3af;
+}
+
+.action-btn.disabled:hover {
+    background: #f3f4f6;
+    transform: none;
+}
+
+/* Custom Tooltip Styles */
+.custom-tooltip {
+    position: fixed;
+    background: #1f2937;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    white-space: nowrap;
+    z-index: 10000;
+    pointer-events: none;
+    animation: fadeIn 0.15s ease-in;
+}
+
+.custom-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #1f2937;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .footer {
