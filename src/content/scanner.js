@@ -411,8 +411,8 @@
         const headerIssues = checkSecurityHeaders();
         const secretIssues = scanForExposedSecrets();
         
-        // Combine all issues
-        const allIssues = [...headerIssues, ...secretIssues];
+        // Combine issues for display (but header issues are premium-only)
+        const allIssues = [...secretIssues];  // Only secrets, not headers
         
         // Calculate vulnerability counts
         const vulnerabilities = {
@@ -434,8 +434,8 @@
             }
         });
         
-        // Count header and secret issues
-        allIssues.forEach(issue => {
+        // Count ONLY secret issues (header issues are premium)
+        secretIssues.forEach(issue => {
             const severity = String(issue.severity || '').toLowerCase();
             if (vulnerabilities[severity] !== undefined) {
                 vulnerabilities[severity]++;
