@@ -3,7 +3,7 @@
 AI-Powered Browser Extension for Web Application Security Testing
 
 ![Status](https://img.shields.io/badge/status-active-success)
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Version](https://img.shields.io/badge/version-1.1.0-blue)
 ![AI](https://img.shields.io/badge/AI-Claude%204-orange)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -30,11 +30,12 @@ AI-Powered Browser Extension for Web Application Security Testing
 *Extension loaded successfully with interactive popup interface*
 
 **Current Features:**
-- ✅ Loads successfully in Chrome without errors
-- ✅ Professional blue-themed UI with branding
-- ✅ Interactive scan button with test functionality
-- ✅ Service worker and content script architecture
-- ✅ Extensible structure ready for feature development
+- ✅ **Input Field Analysis** - Detects validation weaknesses in forms
+- ✅ **Security Headers Detection** - Checks for CSP, X-Frame-Options, HSTS, X-Content-Type-Options
+- ✅ **Exposed Secrets Scanner** - Finds API keys, tokens, and credentials in page source
+- ✅ **Page Type Classification** - Identifies payment/login/admin pages for risk assessment
+- ✅ **Smart Risk Scoring** - Traffic light system (🔴 HIGH / 🟠 MEDIUM / 🟢 LOW)
+- ✅ **Severity-Sorted Results** - Issues displayed CRITICAL → HIGH → MEDIUM → LOW
 
 ---
 
@@ -54,7 +55,10 @@ Visual risk indicators for instant priority assessment:
 Controlled test environments to demonstrate detection capabilities:
 
 - **[Vulnerable Payment Page](docs/test-pages/test-vulnerable-payment.html)** - Expected: 🔴 HIGH risk
-  - Missing CSP, debug mode, input validation issues
+  - Missing security headers (CSP, X-Frame-Options, HSTS)
+  - Multiple exposed API keys (AWS, Google, Stripe, GitHub)
+  - Input validation weaknesses
+  - Sensitive field autocomplete enabled
   
 - **[Secure Example Page](docs/test-pages/test-secure-example.html)** - Expected: 🟢 LOW risk
   - All security controls properly implemented
@@ -225,15 +229,37 @@ Shows continuous improvement and application of new knowledge.
 
 ## 🔮 Roadmap
 
-### v1.0 - MVP (Current Phase)
+### v1.1.0 - Phase 2 Complete (December 12, 2025) ✅
+**Major Features Added:**
+- ✅ Security headers detection (CSP, X-Frame-Options, HSTS, X-Content-Type-Options)
+- ✅ Exposed secrets scanner (AWS, GitHub, Google, Stripe API keys)
+- ✅ Severity-based sorting (CRITICAL → HIGH → MEDIUM → LOW)
+- ✅ Industry-standard secret pattern matching
+- ✅ Proper pluralization in issue descriptions
+- ✅ Enhanced security protections (entropy checking, context validation)
+- ✅ Professional vulnerability reporting
+
+**Technical Improvements:**
+- GitHub token pattern: 30-82 chars (covers all token types)
+- Stripe API pattern: 24-99 chars (matches real-world keys)
+- AWS Secret pattern: Context-aware detection
+- Deduplication to prevent redundant findings
+- Grammatically correct issue descriptions
+
+**Security Enhancements:**
+- DoS protection via size limits
+- Secret masking in output
+- False positive reduction
+- Multiple protection layers
+
+### v1.0.0 - MVP (December 5-6, 2025)
 - ✅ Design documentation complete
 - ✅ Extension structure implemented
 - ✅ Basic popup UI working
 - ✅ Test pages created
-- 🚧 Static vulnerability detection (in progress)
-- 📋 Claude API contextual analysis (planned)
-- 📋 Traffic light risk indicators (planned)
-- 📋 HTML report export (planned)
+- ✅ Input field validation detection
+- ✅ Page type classification
+- ✅ Smart risk scoring (traffic light system)
 
 ### v2.0 - Enhanced (Q1 2026)
 - OWASP Top 10 integration

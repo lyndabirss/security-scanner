@@ -8,9 +8,8 @@
     <!-- INTENTIONALLY MISSING: Content-Security-Policy header -->
     <!-- This would normally be set server-side but absence is detectable -->
     
-    <!-- VULNERABLE: Weak X-Frame-Options -->
-    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
-    <!-- SHOULD BE: DENY for payment pages -->
+    <!-- INTENTIONALLY MISSING: X-Frame-Options header -->
+    <!-- Page can be embedded in iframes - vulnerable to clickjacking -->
     
     <style>
         body {
@@ -124,15 +123,20 @@
         <div class="security-note">
             <strong>Expected Findings:</strong>
             <ul>
-                <li>🔴 Missing Content-Security-Policy (CRITICAL)</li>
-                <li>🔴 Debug mode enabled (CRITICAL)</li>
-                <li>🔴 Email field accepts HTML (HIGH)</li>
-                <li>🟠 Weak X-Frame-Options (MEDIUM)</li>
-                <li>🟠 CVV field accepts letters (MEDIUM)</li>
-                <li>🟠 No minimum password length (MEDIUM)</li>
-                <li>🟢 CSRF token present (PASS)</li>
+                <li>⚠️ AWS Access Keys exposed (CRITICAL) - 2 found</li>
+                <li>⚠️ Google API Key exposed (CRITICAL)</li>
+                <li>⚠️ GitHub Token exposed (CRITICAL)</li>
+                <li>⚠️ Stripe API Key exposed (CRITICAL)</li>
+                <li>⚠️ AWS Secret Key exposed (CRITICAL)</li>
+                <li>🔴 Missing Content-Security-Policy (HIGH)</li>
+                <li>🔴 Missing X-Frame-Options (HIGH)</li>
+                <li>🟠 Missing X-Content-Type-Options (MEDIUM)</li>
+                <li>🟠 CVV field allows autocomplete (MEDIUM)</li>
+                <li>🟠 Card number field lacks validation (MEDIUM)</li>
+                <li>🟢 Email field relies on browser validation (LOW)</li>
             </ul>
-            <strong>Overall Risk: 🔴 HIGH</strong>
+            <strong>Overall Risk: <span style="font-size: 20px;">⚠️</span> CRITICAL</strong><br>
+            <strong>Expected Counts: 7 Critical/High, 3 Medium, 1 Low = 11 total issues</strong>
         </div>
     </div>
 
@@ -140,8 +144,17 @@
         // VULNERABLE: Debug mode enabled in production
         window.DEBUG_MODE = true;
         
-        // VULNERABLE: API key exposed in client-side code
-        const API_KEY = "sk_live_51H7xyzABCDEF123456789";
+        // VULNERABLE: Multiple API keys exposed in client-side code
+        const STRIPE_KEY = "sk_live_51H7xyzABCDEF123456789AB";
+        const AWS_KEY = "AKIAIOSFODNN7EXAMPLE";
+        const GOOGLE_API_KEY = "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe";
+        const GITHUB_TOKEN = "ghp_1234567890abcdefghijklmnopqrstuv";
+        
+        // VULNERABLE: AWS credentials in config
+        const awsConfig = {
+            accessKeyId: "AKIAIOSFODNN7EXAMPLE",
+            secretAccessKey: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+        };
         
         // VULNERABLE: Verbose error logging
         console.log("Payment form initialized");
@@ -172,5 +185,11 @@
             return false;
         };
     </script>
+    
+    <footer style="margin-top: 40px; padding: 20px; text-align: center; font-size: 12px; color: #666; border-top: 1px solid #ddd;">
+        <p><strong>Security Scanner Test Page</strong> | Version 1.1.0</p>
+        <p>© 2025 Lynda M Birss. All rights reserved.</p>
+        <p style="font-size: 11px; margin-top: 10px;">This page is intentionally vulnerable for security testing purposes only.</p>
+    </footer>
 </body>
 </html>

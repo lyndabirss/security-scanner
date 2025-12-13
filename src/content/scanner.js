@@ -1,7 +1,7 @@
 /**
  * Security Scanner - Content Script
  * Copyright (c) 2025 Lynda M Birss
- * Version: 1.0.0
+ * Version: 1.1.0
  * 
  * Security Measures:
  * - Message validation: Verify all incoming messages from popup
@@ -228,6 +228,177 @@
     }
     
     /**
+     * Check security headers
+     * Returns array of header-related vulnerabilities
+     */
+    function checkSecurityHeaders() {
+        const headerIssues = [];
+        
+        // Note: Content scripts cannot directly access HTTP headers
+        // We check for meta tags and response indicators instead
+        
+        // Check for Content-Security-Policy
+        const cspMeta = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
+        if (!cspMeta) {
+            headerIssues.push({
+                severity: 'HIGH',
+                category: 'MISSING_HEADER',
+                issue: 'Missing Content-Security-Policy',
+                description: 'No CSP detected. Page is vulnerable to XSS attacks.',
+                recommendation: 'Add CSP header to restrict script sources'
+            });
+        }
+        
+        // Check for X-Frame-Options via meta or frame-busting script
+        const frameOptionsMeta = document.querySelector('meta[http-equiv="X-Frame-Options"]');
+        const hasFrameBusting = Array.from(document.scripts).some(script => {
+            const content = script.textContent || '';
+            return content.includes('top.location') || content.includes('framebusting');
+        });
+        
+        if (!frameOptionsMeta && !hasFrameBusting) {
+            headerIssues.push({
+                severity: 'HIGH',
+                category: 'MISSING_HEADER',
+                issue: 'Missing X-Frame-Options protection',
+                description: 'Page can be embedded in iframes, vulnerable to clickjacking.',
+                recommendation: 'Add X-Frame-Options: DENY or SAMEORIGIN header'
+            });
+        }
+        
+        // Check for HSTS indication
+        if (window.location.protocol === 'https:') {
+            // We can't check the actual header, but we can note its importance
+            const hstsMeta = document.querySelector('meta[http-equiv="Strict-Transport-Security"]');
+            if (!hstsMeta) {
+                headerIssues.push({
+                    severity: 'MEDIUM',
+                    category: 'MISSING_HEADER',
+                    issue: 'No HSTS meta tag detected',
+                    description: 'Cannot verify if Strict-Transport-Security header is set.',
+                    recommendation: 'Ensure HSTS header is configured on server'
+                });
+            }
+        } else if (window.location.protocol === 'http:') {
+            headerIssues.push({
+                severity: 'HIGH',
+                category: 'PROTOCOL',
+                issue: 'Page served over HTTP',
+                description: 'Unencrypted connection exposes data to interception.',
+                recommendation: 'Implement HTTPS and HSTS'
+            });
+        }
+        
+        // Check for X-Content-Type-Options
+        const contentTypeMeta = document.querySelector('meta[http-equiv="X-Content-Type-Options"]');
+        if (!contentTypeMeta) {
+            headerIssues.push({
+                severity: 'MEDIUM',
+                category: 'MISSING_HEADER',
+                issue: 'Missing X-Content-Type-Options',
+                description: 'Browser might MIME-sniff responses, potentially executing malicious content.',
+                recommendation: 'Add X-Content-Type-Options: nosniff header'
+            });
+        }
+        
+        return headerIssues;
+    }
+    
+    /**
+     * Scan page source for exposed secrets/credentials
+     * Returns array of exposed secret vulnerabilities
+     */
+    function scanForExposedSecrets() {
+        const secretIssues = [];
+        
+        // Get page source - limit size to prevent DoS
+        const pageSource = document.documentElement.outerHTML.substring(0, 500000);
+        
+        // Define secret patterns
+        const patterns = [
+            {
+                name: 'AWS Access Key',
+                pattern: /AKIA[0-9A-Z]{16}/g,
+                severity: 'CRITICAL'
+            },
+            {
+                name: 'AWS Secret Key',
+                pattern: /secret[^'"]{0,20}['"][A-Za-z0-9\/+=]{40}['"]/gi,
+                severity: 'CRITICAL'
+            },
+            {
+                name: 'GitHub Token',
+                pattern: /gh[prso]_[a-zA-Z0-9]{30,82}/g,
+                severity: 'CRITICAL'
+            },
+            {
+                name: 'Google API Key',
+                pattern: /AIza[0-9A-Za-z\-_]{35}/g,
+                severity: 'CRITICAL'
+            },
+            {
+                name: 'Stripe API Key',
+                pattern: /sk_live_[0-9a-zA-Z]{24,99}/g,
+                severity: 'CRITICAL'
+            },
+            {
+                name: 'Generic API Key',
+                pattern: /api[_-]?key['"]?\s*[:=]\s*['"][a-zA-Z0-9]{20,}['"]/gi,
+                severity: 'HIGH'
+            },
+            {
+                name: 'Authorization Token',
+                pattern: /bearer\s+[a-zA-Z0-9\-._~+\/]+=*/gi,
+                severity: 'HIGH'
+            },
+            {
+                name: 'Private Key',
+                pattern: /-----BEGIN (RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----/g,
+                severity: 'CRITICAL'
+            },
+            {
+                name: 'Generic Secret',
+                pattern: /secret['"]?\s*[:=]\s*['"][a-zA-Z0-9]{20,}['"]/gi,
+                severity: 'MEDIUM'
+            },
+            {
+                name: 'Password in Source',
+                pattern: /password['"]?\s*[:=]\s*['"][^'"]{8,}['"]/gi,
+                severity: 'HIGH'
+            }
+        ];
+        
+        patterns.forEach(({ name, pattern, severity }) => {
+            const matches = pageSource.match(pattern);
+            if (matches && matches.length > 0) {
+                // Limit matches reported to prevent spam
+                const matchCount = Math.min(matches.length, 5);
+                const examples = matches.slice(0, 2).map(m => {
+                    // Mask most of the secret for security
+                    if (m.length > 20) {
+                        return m.substring(0, 10) + '...' + m.substring(m.length - 5);
+                    }
+                    return m.substring(0, 5) + '...';
+                });
+                
+                // Create grammatically correct description
+                const pluralName = matchCount === 1 ? name : name + 's';
+                
+                secretIssues.push({
+                    severity: severity,
+                    category: 'EXPOSED_SECRET',
+                    issue: `${name} exposed in page source`,
+                    description: `Found ${matchCount} potential ${pluralName} in HTML source code.`,
+                    examples: examples,
+                    recommendation: 'Remove secrets from frontend code. Use environment variables and backend API calls.'
+                });
+            }
+        });
+        
+        return secretIssues;
+    }
+    
+    /**
      * Perform comprehensive page scan
      * Security: All data sanitized before returning
      */
@@ -237,6 +408,11 @@
         const pageInfo = getPageInfo();
         const inputs = detectInputFields();
         const pageType = detectPageType(inputs);
+        const headerIssues = checkSecurityHeaders();
+        const secretIssues = scanForExposedSecrets();
+        
+        // Combine all issues
+        const allIssues = [...headerIssues, ...secretIssues];
         
         // Calculate vulnerability counts
         const vulnerabilities = {
@@ -246,6 +422,7 @@
             low: 0
         };
         
+        // Count input validation issues
         inputs.forEach(input => {
             if (Array.isArray(input.validationIssues)) {
                 input.validationIssues.forEach(issue => {
@@ -257,10 +434,20 @@
             }
         });
         
+        // Count header and secret issues
+        allIssues.forEach(issue => {
+            const severity = String(issue.severity || '').toLowerCase();
+            if (vulnerabilities[severity] !== undefined) {
+                vulnerabilities[severity]++;
+            }
+        });
+        
         const scanResults = {
             pageInfo: pageInfo,
             pageType: pageType,
             inputs: inputs,
+            headerIssues: headerIssues,
+            secretIssues: secretIssues,
             vulnerabilities: vulnerabilities,
             totalIssues: vulnerabilities.critical + vulnerabilities.high + 
                         vulnerabilities.medium + vulnerabilities.low,

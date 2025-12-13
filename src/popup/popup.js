@@ -1,7 +1,7 @@
 /**
  * Security Scanner - Popup Script
  * Copyright (c) 2025 Lynda M Birss
- * Version: 1.0.0
+ * Version: 1.1.0
  * 
  * Security Measures:
  * - Input sanitization: All data from content scripts is sanitized before display
@@ -372,7 +372,11 @@ document.addEventListener('DOMContentLoaded', function() {
         let riskColor = '#22c55e';
         let riskIcon = '🟢';
         
-        if (vulns.critical > 0 || vulns.high > 0) {
+        if (vulns.critical > 0) {
+            riskLevel = 'CRITICAL';
+            riskColor = '#dc2626';
+            riskIcon = '⚠️'; // Warning triangle like scanner output
+        } else if (vulns.high > 0) {
             riskLevel = 'HIGH';
             riskColor = '#dc2626';
             riskIcon = '🔴';
@@ -418,58 +422,132 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
         
-        // Show sample findings with sanitization
-        if (totalIssues > 0 && Array.isArray(data.inputs)) {
+        // Show all findings with sanitization - single scroll experience
+        if (totalIssues > 0) {
             html += `<div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e5e7eb;">
-                <strong style="font-size: 13px;">Sample Issues:</strong>
+                <strong style="font-size: 13px;">Issues Found (${totalIssues}):</strong>
+                <div style="margin-top: 8px;">
             `;
             
-            let issueCount = 0;
-            for (const input of data.inputs) {
-                if (issueCount >= 3) break;
+            // Combine all issues into one array for sorting
+            const allIssues = [];
+            
+            // NOTE: Header issues NOT included - they're behind PREMIUM feature
+            // Content scripts can't reliably detect HTTP headers
+            // Only meta tags are detectable, but those are rare
+            
+            // Add secret issues
+            if (Array.isArray(data.secretIssues)) {
+                data.secretIssues.forEach(issue => {
+                    allIssues.push({
+                        type: 'secret',
+                        severity: sanitizeSeverity(issue.severity),
+                        issue: sanitizeText(issue.issue || 'Unknown issue'),
+                        description: sanitizeText(issue.description || ''),
+                        data: issue
+                    });
+                });
+            }
+            
+            // Add input validation issues
+            if (Array.isArray(data.inputs)) {
+                data.inputs.forEach(input => {
+                    if (Array.isArray(input.validationIssues)) {
+                        input.validationIssues.forEach(issue => {
+                            allIssues.push({
+                                type: 'input',
+                                severity: sanitizeSeverity(issue.severity),
+                                issue: sanitizeText(issue.issue || 'Unknown issue'),
+                                description: sanitizeText(issue.description || ''),
+                                fieldName: sanitizeText(input.name || input.id || 'unknown'),
+                                fieldType: sanitizeText(input.type || 'unknown'),
+                                data: issue
+                            });
+                        });
+                    }
+                });
+            }
+            
+            // Sort by severity: CRITICAL > HIGH > MEDIUM > LOW
+            const severityOrder = { 'CRITICAL': 0, 'HIGH': 1, 'MEDIUM': 2, 'LOW': 3, 'UNKNOWN': 4 };
+            allIssues.sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]);
+            
+            // Track if we've shown premium indicator
+            let premiumShown = false;
+            
+            // Display ALL issues (removed 5-item limit)
+            for (const item of allIssues) {
                 
-                if (!Array.isArray(input.validationIssues)) continue;
-                
-                for (const issue of input.validationIssues) {
-                    if (issueCount >= 3) break;
-                    
-                    // Sanitize all issue data
-                    const severity = sanitizeSeverity(issue.severity);
-                    const issueText = sanitizeText(issue.issue || 'Unknown issue');
-                    const description = sanitizeText(issue.description || '');
-                    const fieldName = sanitizeText(input.name || input.id || 'unknown');
-                    const fieldType = sanitizeText(input.type || 'unknown');
-                    
-                    const severityColor = {
-                        'CRITICAL': '#dc2626',
-                        'HIGH': '#dc2626',
-                        'MEDIUM': '#ea580c',
-                        'LOW': '#3b82f6',
-                        'UNKNOWN': '#666'
-                    }[severity];
-                    
+                // Show PREMIUM indicator after CRITICAL/HIGH, before MEDIUM
+                if (!premiumShown && (item.severity === 'MEDIUM' || item.severity === 'LOW')) {
                     html += `
-                        <div style="margin-top: 8px; padding: 8px; background: #f9fafb; border-radius: 4px; font-size: 11px;">
-                            <div style="font-weight: bold; color: ${severityColor}; margin-bottom: 4px;">
-                                ${severity}: ${issueText}
+                        <div style="margin-top: 12px; padding: 12px; background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); border-radius: 6px; border-left: 4px solid #d97706;">
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                                <span style="font-size: 20px;">⭐</span>
+                                <strong style="color: #78350f; font-size: 12px;">PREMIUM FEATURE</strong>
                             </div>
-                            <div style="color: #666;">
-                                Field: ${fieldName} (${fieldType})<br>
-                                ${description}
+                            <div style="color: #78350f; font-size: 11px; line-height: 1.5; margin-bottom: 8px;">
+                                <strong>Security Headers Analysis</strong><br>
+                                Upgrade to check Content-Security-Policy, X-Frame-Options, HSTS, and X-Content-Type-Options headers.
+                            </div>
+                            <div style="color: #78350f; font-size: 10px; font-weight: 600; cursor: not-allowed; opacity: 0.7;" title="Coming in version 2.0">
+                                Available in v2.0
                             </div>
                         </div>
                     `;
-                    issueCount++;
+                    premiumShown = true;
+                }
+                    
+                const severityColor = {
+                    'CRITICAL': '#dc2626',
+                    'HIGH': '#dc2626',
+                    'MEDIUM': '#ea580c',
+                    'LOW': '#3b82f6',
+                    'UNKNOWN': '#666'
+                }[item.severity];
+                
+                // Display based on issue type
+                if (item.type === 'secret') {
+                    // Secrets get yellow background with warning icon
+                    html += `
+                        <div style="margin-top: 8px; padding: 8px; background: #fff3cd; border-radius: 4px; font-size: 11px; border-left: 3px solid ${severityColor};">
+                            <div style="font-weight: bold; color: ${severityColor}; margin-bottom: 4px;">
+                                ⚠️ ${item.severity}: ${item.issue}
+                            </div>
+                            <div style="color: #666;">
+                                ${item.description}
+                            </div>
+                        </div>
+                    `;
+                } else if (item.type === 'input') {
+                    // Input validation issues show field info
+                    html += `
+                        <div style="margin-top: 8px; padding: 8px; background: #f9fafb; border-radius: 4px; font-size: 11px;">
+                            <div style="font-weight: bold; color: ${severityColor}; margin-bottom: 4px;">
+                                ${item.severity}: ${item.issue}
+                            </div>
+                            <div style="color: #666;">
+                                Field: ${item.fieldName} (${item.fieldType})<br>
+                                ${item.description}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Header and other issues
+                    html += `
+                        <div style="margin-top: 8px; padding: 8px; background: #f9fafb; border-radius: 4px; font-size: 11px;">
+                            <div style="font-weight: bold; color: ${severityColor}; margin-bottom: 4px;">
+                                ${item.severity}: ${item.issue}
+                            </div>
+                            <div style="color: #666;">
+                                ${item.description}
+                            </div>
+                        </div>
+                    `;
                 }
             }
             
-            html += `</div>`;
-            
-            if (totalIssues > 3) {
-                html += `<div style="text-align: center; margin-top: 10px; font-size: 11px; color: #666;">
-                    +${totalIssues - 3} more issue${totalIssues - 3 !== 1 ? 's' : ''}
-                </div>`;
-            }
+            html += `</div></div>`; // Close scrollable container and Issues Found section
         } else {
             html += `<div style="text-align: center; color: #22c55e; margin-top: 12px; padding: 12px; background: #f0fdf4; border-radius: 6px;">
                 <div style="font-size: 32px; margin-bottom: 8px;">✅</div>
