@@ -1,7 +1,7 @@
 /**
  * Security Scanner - Popup Script
  * Copyright (c) 2025 Lynda M Birss
- * Version: 1.1.0
+ * Version: 1.1.1
  * 
  * Security Measures:
  * - Input sanitization: All data from content scripts is sanitized before display
@@ -348,6 +348,34 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     /**
+     * Get severity icon (dot)
+     */
+    function getSeverityIcon(severity) {
+        const icons = {
+            'CRITICAL': '⚠️',
+            'HIGH': '🔴',
+            'MEDIUM': '🟠',
+            'LOW': '🟢',
+            'UNKNOWN': '⚪'
+        };
+        return icons[severity] || '⚪';
+    }
+    
+    /**
+     * Get severity color
+     */
+    function getSeverityColor(severity) {
+        const colors = {
+            'CRITICAL': '#dc2626',
+            'HIGH': '#dc2626',
+            'MEDIUM': '#ea580c',
+            'LOW': '#3b82f6',
+            'UNKNOWN': '#666'
+        };
+        return colors[severity] || '#666';
+    }
+    
+    /**
      * Display scan results with sanitization
      * Security: All displayed data is sanitized before rendering
      */
@@ -480,31 +508,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Show PREMIUM indicator after CRITICAL/HIGH, before MEDIUM
                 if (!premiumShown && (item.severity === 'MEDIUM' || item.severity === 'LOW')) {
+                    // Always show premium pane with consistent bullet point list
                     html += `
-                        <div style="margin-top: 12px; padding: 12px; background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); border-radius: 6px; border-left: 4px solid #d97706;">
-                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                        <div style="margin-top: 12px; padding: 12px; background: linear-gradient(135deg, #fde047 0%, #fcd34d 100%); border-radius: 6px; border-left: 4px solid #d97706;">
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                                 <span style="font-size: 20px;">⭐</span>
-                                <strong style="color: #78350f; font-size: 12px;">PREMIUM FEATURE</strong>
+                                <strong style="color: #78350f; font-size: 12px;">PREMIUM FEATURE - Security Headers Analysis</strong>
                             </div>
-                            <div style="color: #78350f; font-size: 11px; line-height: 1.5; margin-bottom: 8px;">
-                                <strong>Security Headers Analysis</strong><br>
-                                Upgrade to check Content-Security-Policy, X-Frame-Options, HSTS, and X-Content-Type-Options headers.
+                            <div style="margin-left: 12px; margin-bottom: 8px;">
+                                <div style="margin-bottom: 4px; font-size: 11px; color: #78350f;">• Content-Security-Policy</div>
+                                <div style="margin-bottom: 4px; font-size: 11px; color: #78350f;">• X-Content-Type-Options</div>
+                                <div style="margin-bottom: 4px; font-size: 11px; color: #78350f;">• X-Frame-Options</div>
+                                <div style="margin-bottom: 4px; font-size: 11px; color: #78350f;">• HSTS and more</div>
                             </div>
                             <div style="color: #78350f; font-size: 10px; font-weight: 600; cursor: not-allowed; opacity: 0.7;" title="Coming in version 2.0">
-                                Available in v2.0
+                                Upgrade to see full analysis and recommendations · Available in v2.0
                             </div>
                         </div>
                     `;
                     premiumShown = true;
                 }
-                    
-                const severityColor = {
-                    'CRITICAL': '#dc2626',
-                    'HIGH': '#dc2626',
-                    'MEDIUM': '#ea580c',
-                    'LOW': '#3b82f6',
-                    'UNKNOWN': '#666'
-                }[item.severity];
+                
+                const severityColor = getSeverityColor(item.severity);
                 
                 // Display based on issue type
                 if (item.type === 'secret') {
@@ -553,6 +578,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div style="font-size: 32px; margin-bottom: 8px;">✅</div>
                 <strong>No Issues Found!</strong>
                 <div style="font-size: 11px; margin-top: 4px;">All input fields have proper validation</div>
+            </div>
+            
+            <div style="margin-top: 12px; padding: 12px; background: linear-gradient(135deg, #fde047 0%, #fcd34d 100%); border-radius: 6px; border-left: 4px solid #d97706;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                    <span style="font-size: 20px;">⭐</span>
+                    <strong style="color: #78350f; font-size: 12px;">PREMIUM FEATURE - Security Headers Analysis</strong>
+                </div>
+                <div style="margin-left: 12px; margin-bottom: 8px;">
+                    <div style="margin-bottom: 4px; font-size: 11px; color: #78350f;">• Content-Security-Policy</div>
+                    <div style="margin-bottom: 4px; font-size: 11px; color: #78350f;">• X-Content-Type-Options</div>
+                    <div style="margin-bottom: 4px; font-size: 11px; color: #78350f;">• X-Frame-Options</div>
+                    <div style="margin-bottom: 4px; font-size: 11px; color: #78350f;">• HSTS and more</div>
+                </div>
+                <div style="color: #78350f; font-size: 10px; font-weight: 600; cursor: not-allowed; opacity: 0.7;" title="Coming in version 2.0">
+                    Upgrade to see full analysis and recommendations · Available in v2.0
+                </div>
             </div>`;
         }
         
