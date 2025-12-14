@@ -17,9 +17,22 @@ AI-Powered Browser Extension for Web Application Security Testing
 
 **Result:** Critical vulnerabilities identified in <2 seconds with zero security expertise required.
 
+### In Action
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+  <div>
+    <p style="text-align: center; font-weight: bold; margin-bottom: 10px;">✅ Clean Site Detection</p>
+    <img src="docs/screenshots/Scanner_v1.1.1_Low_Premium.png" alt="Security Scanner showing LOW risk with premium pane" style="width: 100%; max-width: 400px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+  </div>
+  <div>
+    <p style="text-align: center; font-weight: bold; margin-bottom: 10px;">⚠️ Vulnerability Detection</p>
+    <img src="docs/screenshots/Scanner_v1.1.1_Critical.png" alt="Security Scanner showing CRITICAL findings" style="width: 100%; max-width: 400px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+  </div>
+</div>
+
 ---
 
-## ✨ What It Does
+## ✨ Core Features
 
 - 🔴 **Input Validation** - Detects weak form field validation
 - 🔐 **Exposed Secrets** - Finds API keys, tokens, and credentials in page source
@@ -57,9 +70,9 @@ Instant visual priority assessment:
 
 ✅ Extension loads and scans successfully  
 ✅ Input validation detection working  
-✅ Exposed secrets scanner active  
-✅ Security headers detection (premium)  
-✅ v1.1.1 deployed with enhanced premium pane
+✅ Exposed secrets scanner active (AWS keys, GitHub tokens, etc.)  
+✅ Security headers detection (premium feature)  
+✅ v1.1.1 deployed with enhanced premium pane visibility
 
 ---
 
