@@ -19,14 +19,14 @@ AI-Powered Browser Extension for Web Application Security Testing
 
 ### In Action
 
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; max-width: 800px;">
   <div>
-    <p style="text-align: center; font-weight: bold; margin-bottom: 10px;">✅ Clean Site Detection</p>
-    <img src="docs/screenshots/Scanner_v1.1.1_Low_Premium.png" alt="Security Scanner showing LOW risk with premium pane" style="width: 100%; max-width: 400px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <p style="text-align: center; font-weight: bold; margin-bottom: 10px; font-size: 14px;">✅ Clean Site Detection</p>
+    <img src="docs/screenshots/Scanner_v1.1.1_Low_Premium.png" alt="Security Scanner showing LOW risk with premium pane" style="width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
   </div>
   <div>
-    <p style="text-align: center; font-weight: bold; margin-bottom: 10px;">⚠️ Vulnerability Detection</p>
-    <img src="docs/screenshots/Scanner_v1.1.1_Critical.png" alt="Security Scanner showing CRITICAL findings" style="width: 100%; max-width: 400px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <p style="text-align: center; font-weight: bold; margin-bottom: 10px; font-size: 14px;">⚠️ Vulnerability Detection</p>
+    <img src="docs/screenshots/Scanner_v1.1.1_Critical.png" alt="Security Scanner showing CRITICAL findings" style="width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
   </div>
 </div>
 
