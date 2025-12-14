@@ -19,13 +19,9 @@ AI-Powered Browser Extension for Web Application Security Testing
 
 ### In Action
 
-**Clean Site Detection**
-
-![Security Scanner v1.1.1 - LOW risk with premium pane](docs/screenshots/Scanner_v1.1.1_Low_Premium.png)
-
-**Vulnerability Detection**
-
-![Security Scanner v1.1.1 - CRITICAL findings](docs/screenshots/Scanner_v1.1.1_Critical.png)
+| Clean Site Detection | Vulnerability Detection |
+|---|---|
+| ![Security Scanner v1.1.1 - LOW risk with premium pane](docs/screenshots/Scanner_v1.1.1_Low_Premium.png) | ![Security Scanner v1.1.1 - CRITICAL findings](docs/screenshots/Scanner_v1.1.1_Critical.png) |
 
 ---
 
