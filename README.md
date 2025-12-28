@@ -72,7 +72,9 @@ Instant visual priority assessment:
 ✅ Input validation detection working  
 ✅ Exposed secrets scanner active (AWS keys, GitHub tokens, etc.)  
 ✅ Security headers detection (premium feature)  
-✅ v1.1.1 deployed with enhanced premium pane visibility
+✅ v1.2.0 deployed with export functionality
+✅ JSON export for RAG-friendly data analysis
+
 
 ---
 

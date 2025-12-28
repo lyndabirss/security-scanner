@@ -1,7 +1,7 @@
 /**
  * Security Scanner - Popup Script
  * Copyright (c) 2025 Lynda M Birss
- * Version: 1.1.1
+ * Version: 1.2.0
  * 
  * Security Measures:
  * - Input sanitization: All data from content scripts is sanitized before display
@@ -12,6 +12,11 @@
 
 // Get version from manifest
 const VERSION = chrome.runtime.getManifest().version;
+
+// Store last scan data for export functionality
+let lastScanData = null;
+let lastScanUrl = null;
+let lastScanTimestamp = null;
 
 document.addEventListener('DOMContentLoaded', function() {
     const scanButton = document.getElementById('scanButton');
@@ -91,6 +96,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 if (response && response.success) {
+                    // Store scan data for export
+                    lastScanData = response.data;
+                    lastScanUrl = tab.url;
+                    lastScanTimestamp = new Date().toISOString();
+                    
                     displayResults(response.data);
                     // Show action bar after scan completes
                     showActionBar();
@@ -115,6 +125,116 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             resetButton();
         }
+    }
+    
+    /**
+     * Export scan results as RAG-friendly JSON
+     */
+    function exportScanResults() {
+        if (!lastScanData) {
+            alert('No scan data available. Please run a scan first.');
+            return;
+        }
+        
+        // Create RAG-friendly export structure
+        const exportData = {
+            metadata: {
+                tool: 'Security Scanner',
+                version: VERSION,
+                scanDate: lastScanTimestamp,
+                url: lastScanUrl,
+                pageType: lastScanData.pageType
+            },
+            summary: {
+                totalIssues: lastScanData.totalIssues,
+                riskLevel: calculateRiskLevel(lastScanData.vulnerabilities),
+                vulnerabilities: lastScanData.vulnerabilities,
+                inputsAnalyzed: lastScanData.inputs?.length || 0,
+                formsDetected: lastScanData.pageInfo?.formCount || 0
+            },
+            findings: []
+        };
+        
+        // Add input validation issues
+        if (Array.isArray(lastScanData.inputs)) {
+            lastScanData.inputs.forEach(input => {
+                if (Array.isArray(input.validationIssues)) {
+                    input.validationIssues.forEach(issue => {
+                        exportData.findings.push({
+                            category: 'input_validation',
+                            severity: issue.severity,
+                            issue: issue.issue,
+                            description: issue.description,
+                            field: {
+                                name: input.name || input.id || 'unknown',
+                                type: input.type || 'unknown',
+                                required: input.required || false
+                            }
+                        });
+                    });
+                }
+            });
+        }
+        
+        // Add secret detection issues
+        if (Array.isArray(lastScanData.secretIssues)) {
+            lastScanData.secretIssues.forEach(issue => {
+                exportData.findings.push({
+                    category: 'exposed_secrets',
+                    severity: issue.severity,
+                    issue: issue.issue,
+                    description: issue.description
+                });
+            });
+        }
+        
+        // Create filename with timestamp
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+        const hostname = new URL(lastScanUrl).hostname;
+        const filename = `security-scan_${hostname}_${timestamp}.json`;
+        
+        // Create download
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+        
+        // Show feedback
+        showExportFeedback();
+    }
+    
+    /**
+     * Calculate overall risk level from vulnerabilities
+     */
+    function calculateRiskLevel(vulns) {
+        if (!vulns) return 'UNKNOWN';
+        if (vulns.critical > 0) return 'CRITICAL';
+        if (vulns.high > 0) return 'HIGH';
+        if (vulns.medium > 0) return 'MEDIUM';
+        if (vulns.low > 0) return 'LOW';
+        return 'CLEAN';
+    }
+    
+    /**
+     * Show visual feedback when export completes
+     */
+    function showExportFeedback() {
+        const exportBtn = document.getElementById('exportBtn');
+        if (!exportBtn) return;
+        
+        const originalText = exportBtn.innerHTML;
+        exportBtn.innerHTML = '✅ Exported!';
+        exportBtn.style.background = '#22c55e';
+        exportBtn.style.color = 'white';
+        
+        setTimeout(() => {
+            exportBtn.innerHTML = originalText;
+            exportBtn.style.background = '';
+            exportBtn.style.color = '';
+        }, 2000);
     }
     
     /**
@@ -215,11 +335,13 @@ document.addEventListener('DOMContentLoaded', function() {
             performScan();
         });
         
+        // Wire up export button (now enabled!)
+        document.getElementById('exportBtn').addEventListener('click', exportScanResults);
+        
         // Setup custom tooltips
         setupCustomTooltips();
         
         // Future buttons will be wired up here as features are added
-        // document.getElementById('exportBtn').addEventListener('click', exportReport);
         // document.getElementById('settingsBtn').addEventListener('click', openSettings);
         // document.getElementById('helpBtn').addEventListener('click', showHelp);
     }
@@ -265,10 +387,10 @@ document.addEventListener('DOMContentLoaded', function() {
             <button id="scanAgainBtn" class="action-btn primary">
                 🔄 Scan Again
             </button>
-            <button id="exportBtn" class="action-btn secondary disabled" disabled data-tooltip="Available in v1.1">
-                📄 Export
+            <button id="exportBtn" class="action-btn secondary">
+                ⬇️ Export JSON
             </button>
-            <button id="settingsBtn" class="action-btn secondary disabled" disabled data-tooltip="Available in v1.1">
+            <button id="settingsBtn" class="action-btn secondary disabled" disabled data-tooltip="Coming soon">
                 ⚙️ Settings
             </button>
             <button id="helpBtn" class="action-btn secondary disabled" disabled data-tooltip="Coming soon">
