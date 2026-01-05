@@ -1,7 +1,7 @@
 /**
  * Security Scanner - Popup Script
  * Copyright (c) 2025 Lynda M Birss
- * Version: 1.2.0
+ * Version: 1.3.0
  * 
  * Security Measures:
  * - Input sanitization: All data from content scripts is sanitized before display
@@ -498,6 +498,43 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     /**
+     * Create LLM detection banner HTML
+     */
+    function createLLMBanner(llmData) {
+        // Show "No AI detected" when no LLM found
+        if (!llmData || !llmData.detected) {
+            return `
+                <div style="margin-top: 12px; padding: 10px; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-radius: 6px; border-left: 4px solid #22c55e;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 16px;">✓</span>
+                        <strong style="color: #15803d; font-size: 12px;">No AI/LLM Detected</strong>
+                        <span style="font-size: 10px; color: #16a34a; margin-left: auto;">This page does not use AI services</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // AI detected - show provider info
+        return `
+            <div style="margin-top: 12px; padding: 12px; background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-radius: 6px; border-left: 4px solid ${llmData.trustColor};">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                    <span style="font-size: 20px;">${llmData.trustIcon}</span>
+                    <strong style="color: #1e40af; font-size: 13px;">AI/LLM Detected</strong>
+                </div>
+                <div style="font-size: 11px; color: #1e40af; margin-bottom: 6px;">
+                    <strong>Provider:</strong> ${sanitizeText(llmData.provider)}
+                </div>
+                <div style="font-size: 10px; color: #64748b; margin-bottom: 4px;">
+                    <strong>Data Policy:</strong> ${sanitizeText(llmData.dataPolicy)}
+                </div>
+                <div style="font-size: 10px; color: #64748b;">
+                    ${sanitizeText(llmData.recommendations)}
+                </div>
+            </div>
+        `;
+    }
+    
+    /**
      * Display scan results with sanitization
      * Security: All displayed data is sanitized before rendering
      */
@@ -506,6 +543,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const pageType = sanitizePageType(data.pageType);
         const totalIssues = parseInt(data.totalIssues) || 0;
         
+        let html = '';
+
         // Sanitize vulnerability counts
         const vulns = {
             critical: parseInt(data.vulnerabilities?.critical) || 0,
@@ -536,7 +575,8 @@ document.addEventListener('DOMContentLoaded', function() {
             riskIcon = '🟠';
         }
         
-        let html = `
+        html += `
+
             <div style="margin-bottom: 15px; padding: 12px; background: #f9fafb; border-radius: 6px; border-left: 4px solid ${riskColor};">
                 <div style="font-size: 24px; text-align: center; margin-bottom: 8px;">${riskIcon}</div>
                 <div style="text-align: center;">
@@ -718,6 +758,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>`;
         }
+        
+        // Add AI/LLM detection banner at the end (after security findings)
+        html += createLLMBanner(data.llmDetection);
         
         resultsDiv.innerHTML = html;
     }

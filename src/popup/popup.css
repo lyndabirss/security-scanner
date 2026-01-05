@@ -21,6 +21,9 @@ body {
 }
 
 .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
     background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
     color: white;
     padding: 16px;

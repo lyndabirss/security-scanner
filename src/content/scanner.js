@@ -1,7 +1,7 @@
 /**
  * Security Scanner - Content Script
  * Copyright (c) 2025 Lynda M Birss
- * Version: 1.1.0
+ * Version: 1.3.0
  * 
  * Security Measures:
  * - Message validation: Verify all incoming messages from popup
@@ -410,6 +410,7 @@
         const pageType = detectPageType(inputs);
         const headerIssues = checkSecurityHeaders();
         const secretIssues = scanForExposedSecrets();
+        const llmDetection = detectLLMProvider();  // Detect AI usage
         
         // Combine issues for display (but header issues are premium-only)
         const allIssues = [...secretIssues];  // Only secrets, not headers
@@ -448,6 +449,7 @@
             inputs: inputs,
             headerIssues: headerIssues,
             secretIssues: secretIssues,
+            llmDetection: llmDetection,
             vulnerabilities: vulnerabilities,
             totalIssues: vulnerabilities.critical + vulnerabilities.high + 
                         vulnerabilities.medium + vulnerabilities.low,

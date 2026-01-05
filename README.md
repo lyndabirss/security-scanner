@@ -3,7 +3,7 @@
 AI-Powered Browser Extension for Web Application Security Testing
 
 ![Status](https://img.shields.io/badge/status-active-success)
-![Version](https://img.shields.io/badge/version-1.1.1-blue)
+![Version](https://img.shields.io/badge/version-1.3.0-blue)
 ![AI](https://img.shields.io/badge/AI-Claude%204-orange)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -39,6 +39,8 @@ AI-Powered Browser Extension for Web Application Security Testing
 - 🛡️ **Security Headers** - Premium feature analyzing CSP, X-Frame-Options, HSTS
 - 🎯 **Risk Scoring** - Traffic light system for instant priority assessment
 - ⚠️ **Smart Severity** - Issues ranked CRITICAL → HIGH → MEDIUM → LOW
+- 📤 **JSON Export** - RAG-friendly data export for analysis
+- 🤖 **AI/LLM Detection** - Identifies AI providers with privacy context
 
 ---
 
@@ -55,6 +57,25 @@ Instant visual priority assessment:
 
 ---
 
+## 🤖 AI/LLM Detection
+
+Automatically identifies AI providers with privacy assessments:
+
+| Provider | Trust Level | Privacy Status |
+|----------|-------------|----------------|
+| 🟢 **Anthropic (Claude)** | Trusted | Does not train on user data |
+| 🟠 **OpenAI (ChatGPT)** | Known | May use data for training unless opted out |
+| 🟠 **Google AI (Gemini)** | Known | Data usage governed by Google privacy policy |
+| 🟠 **Cohere, Hugging Face** | Known | Check specific provider policies |
+
+**What it shows:**
+- Provider identification
+- Data usage policies
+- Privacy recommendations
+- Trust level indicators
+
+---
+
 ## 🚀 Get Started
 
 1. Download or clone this repository
@@ -68,12 +89,14 @@ Instant visual priority assessment:
 
 ## 📊 Current Status
 
-✅ Extension loads and scans successfully  
-✅ Input validation detection working  
-✅ Exposed secrets scanner active (AWS keys, GitHub tokens, etc.)  
-✅ Security headers detection (premium feature)  
-✅ v1.2.0 deployed with export functionality
-✅ JSON export for RAG-friendly data analysis
+**Version 1.3.0** - Active Development
+
+✅ Core security scanning operational  
+✅ All detection modules working (input validation, secrets, headers)  
+✅ AI provider detection with privacy assessments  
+✅ JSON export for data analysis  
+✅ Premium features preview implemented  
+✅ UX improvements (sticky header, visual hierarchy)
 
 
 ---
