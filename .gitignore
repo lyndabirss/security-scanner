@@ -14,3 +14,8 @@ Thumbs.db
 # API keys (future safety)
 .env
 config.local.js
+LLM_INTEGRATION_CLEAR.md
+VERSION_CONTROL.md
+SECURITY_IMPROVEMENTS.md
+LLM_INTEGRATION_CLEAR.md
+VERSION_CONTROL.md
