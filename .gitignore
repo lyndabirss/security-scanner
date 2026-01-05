@@ -1,6 +1,17 @@
 # Personal planning documents - do not commit
 ACTION_PLAN.md
 
+# Internal development notes - NEVER commit these
+SECURITY_IMPROVEMENTS.md
+LLM_INTEGRATION_CLEAR.md
+LLM_INTEGRATION_GUIDE.md
+VERSION_CONTROL.md
+
+# Any future development .md files (catch-all pattern)
+*_NOTES.md
+*_TODO.md
+*_INTERNAL.md
+
 # OS files
 .DS_Store
 Thumbs.db
@@ -11,11 +22,17 @@ Thumbs.db
 *.swp
 *.swo
 
-# API keys (future safety)
+# API keys and secrets (future safety)
 .env
+.env.local
 config.local.js
-LLM_INTEGRATION_CLEAR.md
-VERSION_CONTROL.md
-SECURITY_IMPROVEMENTS.md
-LLM_INTEGRATION_CLEAR.md
-VERSION_CONTROL.md
+secrets.json
+
+# Build artifacts (if needed later)
+dist/
+build/
+*.zip
+
+# Logs
+*.log
+npm-debug.log*
