@@ -456,7 +456,7 @@
             scanTime: new Date().toISOString()
         };
         
-        console.log('Scan complete:', scanResults);
+        console.log('Scan complete');
         return scanResults;
     }
     
